@@ -1,0 +1,42 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<script src="//code.jquery.com/jquery.min.js" type="text/javascript"></script>
+<div class="text-center">
+    <h1 class="display-4">Transactions</h1>
+    <div class="accordion" id="transaction_list"></div>
+</div>
+
+<script>
+    $(function () {
+        var listContainer = $("#transaction_list")
+        $.getJSON('/api/account')
+            .then(function(transactions){
+                $(transactions).each(function(index, transaction){
+                    listContainer.append(`
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link text-${transaction.type === 'credit' ? 'success' : 'danger'}" type="button" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="true" aria-controls="collapseOne">
+                                ${transaction.type}: $${transaction.amount}
+                                </button>
+                            </h2>
+                            </div>
+
+                            <div id="collapse${index}" class="collapse hide" aria-labelledby="headingOne" data-parent="#transaction_list">
+                            <div class="card-body">
+                                Id: ${transaction.id} <br/>
+                                Type: ${transaction.type} <br/>
+                                Amount: ${transaction.amount} <br/>
+                                Effective Date: ${new Date(transaction.effectiveDate).toLocaleDateString()} <br/>
+                            </div>
+                            </div>
+                        </div>
+                    `)
+                })
+            });
+    })
+</script>
